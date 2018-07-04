@@ -1,6 +1,5 @@
 import os
 import shutil
-import importlib
 from common import build_path, target_path, install_path, global_install_path
 from common import print_error, print_warn, create_dir, remove_dir
 from common import execute_script, copy
@@ -47,13 +46,6 @@ def install_override(part, env):
     return False
 
 def build_part(part):
-    try:
-        package_name = ".".join(__name__.split(".")[:-1])
-        module_str = ".".join([package_name, "build_module", part.build])
-        module = importlib.import_module(module_str)
-    except Exception as e:
-        print_error("Failed to import '{}' for building part '{}': {}".format(part.build, part.name, e))
-
     root_dir = global_install_path(part.gconfig)
     install_dir = part.install_path()
     source_dir = part.source_path()
@@ -90,13 +82,13 @@ def build_part(part):
 
     # do the make main
     if build_override(part, env.copy()) is False:
-        module.build(build_dir, root_dir, module_vars, env.copy())
+        part.build_module.build(build_dir, root_dir, module_vars, env.copy())
     part.set_build_state("BUILT")
 
     # do the make install
     create_dir(install_dir)
     if install_override(part, env.copy()) is False:
-        module.install(build_dir, install_dir, root_dir, module_vars, env.copy())
+        part.build_module.install(build_dir, install_dir, root_dir, module_vars, env.copy())
     part.set_build_state("INSTALLED")
 
 def copy_targets(part, target_dir):

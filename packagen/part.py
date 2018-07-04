@@ -1,4 +1,5 @@
 import os
+import importlib
 from source import get_source
 from common import source_path, build_path, install_path, target_path
 from common import print_error, is_list_of_string
@@ -13,6 +14,7 @@ class Part(object):
         self.name = name
         self.source = None
         self.build = None
+        self.build_module = None
         self.doc = None
         self.gconfig = None
         self.targets = []
@@ -113,6 +115,22 @@ def sort_by_dependency(origins, Object):
                 sorted.append(x.obj)
     return sorted
 
+def load_build_module(part):
+    try:
+        package_name = ".".join(__name__.split(".")[:-1])
+        module_str = ".".join([package_name, "build_module", part.build])
+        part.build_module = importlib.import_module(module_str)
+    except Exception as e:
+        print_error("Failed to import '{}' for building part '{}': {}".format(part.build, part.name, e))
+
+def add_default_parameters(part):
+    if not hasattr(part.build_module, "preferred_default_part_parameters"):
+        return
+    def_params = part.build_module.preferred_default_part_parameters()
+    for k, v in def_params.iteritems():
+        if k not in part.doc:
+            part.doc[k] = v
+
 def sort_parts():
     class Object(object):
         def __init__(self, obj):
@@ -131,6 +149,8 @@ def sort_parts():
 def complete_parts(gconfig):
     sort_parts()
     for part in parts:
+        load_build_module(part)
+        add_default_parameters(part)
         print "Pull source of part '{}'".format(part.name)
         part.gconfig = gconfig
         get_source(part)

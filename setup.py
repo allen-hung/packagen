@@ -4,7 +4,7 @@ import os
 #from distutils.core import setup
 from setuptools import setup, find_packages
 
-ver = "1.0.2"
+ver = "1.0.3"
 
 setup(name = "packagen",
       version = ver,
