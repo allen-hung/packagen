@@ -101,7 +101,7 @@ def load_config():
 
     preserved = ["name", "version", "architecture", "description", "maintainer", "depends"]
     for p in preserved:
-        if p not in doc:
+        if p not in doc or doc[p] is None:
             doc[p] = ""
     del doc["part"]
     return doc

@@ -90,7 +90,7 @@ def get_local_file(input, output):
             shutil.copy(file, dest_path)
 
 def get_from_git(url, output, vars):
-    if "branch" in vars:
+    if "branch" in vars and vars["branch"] is not None:
         cmd = ["git", "clone", url, "--branch", vars["branch"], output]
     else:
         cmd = ["git", "clone", url, output]
