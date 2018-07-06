@@ -31,7 +31,7 @@ def addjust_keys(doc):
         for sub in doc:
             addjust_keys(sub)
 
-def process_orig_line(text):
+def process_raw_text(text):
     new_text = ""
     i = 0
     while i < len(text):
@@ -57,7 +57,7 @@ def load_config():
     try:
         with open(config_filename, "r") as fp:
             for line in fp:
-                new_text += process_orig_line(line)
+                new_text += process_raw_text(line)
             #print new_text
     except Exception as e:
         print_error("Cannot open configuration file:", e)

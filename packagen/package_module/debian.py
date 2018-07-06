@@ -9,8 +9,12 @@ def control_path(gconfig):
 
 def verify_config(gconfig):
     if hasattr(gconfig, "control"):
+        if gconfig.control is None:
+            gconfig.control = []
         if not is_list_of_string(gconfig.control):
             print_error("'control' must be a list of strings")
+    else:
+        gconfig.control = []
 
 def package(gconfig):
     deb_file_name = "{}_{}_{}.deb".format(gconfig.name, gconfig.version, gconfig.architecture)
@@ -21,7 +25,7 @@ def package(gconfig):
 
     control_dir = control_path(gconfig)
     files = [os.path.split(path)[1] for path in glob.glob(os.path.join(control_dir, "*"))]
-    for e in (gconfig.control if hasattr(gconfig, "control") else []):
+    for e in gconfig.control:
         if e not in files:
             print_error("cannot find file '{}' in {}".format(e, control_dir))
         shutil.copy(os.path.join(control_dir, e), debain_dir)

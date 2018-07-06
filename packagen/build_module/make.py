@@ -33,7 +33,7 @@ def build(build_dir, root_dir, vars, env):
         print_error(err)
 
 def install(build_dir, install_dir, root_dir, vars, env):
-    extra_paths(root_dir, env) 
+    #extra_paths(root_dir, env)
     os.chdir(build_dir)
     parameters = make_parameters(vars)
     command_line = " ".join(["fakeroot", "make"] + parameters + ["install"])
