@@ -93,7 +93,7 @@ def build_part(part):
 
 def copy_targets(part, target_dir):
     install_dir = part.install_path()
-    src_tag = "$(BUILD)/"
+    src_tag = "$(INSTALL)/"
     dst_tag = "$(TARGET)/"
     if len(part.targets) == 0:
         copy(src_tag, dst_tag, install_dir, target_dir)
