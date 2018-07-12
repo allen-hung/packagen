@@ -92,12 +92,16 @@ def copy(src_tag, dst_tag, src_root, dst_root, src_path="*", dst_path=None):
             else:
                 if is_print:
                     print "{}{} -> {}{}".format(src_tag, src, dst_tag, show_dest)
-                shutil.copytree(src, dest)
+                shutil.copytree(src, dest, symlinks=True)
         else:
             if is_print:
                 print "{}{} -> {}{}".format(src_tag, src, dst_tag, show_dest_dir)
             mkdir_r(dest_dir)
-            shutil.copy(src, dest_dir)
+            if os.path.islink(src):
+                linkto = os.readlink(src)
+                os.symlink(linkto, dest_dir)
+            else:
+                shutil.copy(src, dest_dir)
 
 def sigstring(gconfig):
     strs = [gconfig.version, gconfig.architecture]
