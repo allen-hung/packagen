@@ -20,9 +20,11 @@ def build_prepare(part, env):
     part.set_build_state("PREPARED")
 
 def build_override(part, env):
-    if "build-override" in part.doc and part.doc["build-override"] is not None:
+    if "build-override" in part.doc:
         override = part.doc["build-override"]
-        if not isinstance(override, str):
+        if override is None:
+            override = ""
+        elif not isinstance(override, str):
             print_error("Part '{}': 'build-override' must be string".format(part.name))
         print_warn("Part '{}': 'build-override' is specified and it overrides build() method in '{}' module".format(part.name, part.build))
         os.chdir(part.build_path())
@@ -33,9 +35,11 @@ def build_override(part, env):
     return False
 
 def install_override(part, env):
-    if "install-override" in part.doc and part.doc["install-override"] is not None:
+    if "install-override" in part.doc:
         override = part.doc["install-override"]
-        if not isinstance(override, str):
+        if override is None:
+            override = ""
+        elif not isinstance(override, str):
             print_error("Part '{}': 'install-override' must be string".format(part.name))
         print_warn("Part '{}': 'install-override' is specified and it overrides install() method in '{}' module".format(part.name, part.build))
         os.chdir(part.build_path())

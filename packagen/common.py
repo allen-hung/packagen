@@ -33,10 +33,10 @@ def print_warn(*args):
     print "\033[93m%s\033[0m" % msg
 
 def execute(argv, env=None):
-    if len(argv) == 0:
+    cmdline = " ".join(argv)
+    if len(cmdline) == 0:
         return None
     try:
-        cmdline = " ".join(argv)
         print "\033[92m%s\033[0m" % cmdline
         process = subprocess.Popen([cmdline], stderr=subprocess.PIPE, env=env, shell=True)
     except Exception as e:
