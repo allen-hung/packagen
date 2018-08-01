@@ -20,7 +20,7 @@ def create_dir(path):
         os.makedirs(path)
 
 def remove_dir(path):
-    if os.path.exists(path):
+    if os.path.exists(path) and os.path.isdir(path):
         shutil.rmtree(path)
 
 def print_error(*args):
@@ -130,3 +130,44 @@ def remove_all():
     remove_dir("target")
     remove_dir("install")
     remove_dir("release")
+
+def extract_tarball(filename, dest_dir):
+    def extract_tgz(tarball, dest_dir):
+        return execute(["tar", "zxf", tarball, "-C", dest_dir])
+
+    def extract_txz(tarball, dest_dir):
+        return execute(["tar", "xf", tarball, "-C", dest_dir])
+
+    def extract_tar(tarball, dest_dir):
+        return execute(["tar", "xf", tarball, "-C", dest_dir])
+
+    def extract_gzip(tarball, dest_dir):
+        return "gzip is not yet supported"
+
+    def extract_zip(tarball, dest_dir):
+        return execute(["unzip", tarball, "-d", dest_dir])
+
+    extensions = {
+        ".tar.xz": extract_txz,
+        ".txz": extract_txz,
+        ".tar.gz": extract_tgz,
+        ".tgz": extract_tgz,
+        ".tar": extract_tar,
+        ".gz": extract_gzip,
+        ".zip": extract_zip,
+    }
+
+    match_ext = ""
+    for ext, method in extensions.iteritems():
+        if len(filename) > len(ext) and filename[-len(ext):] == ext:
+            if len(ext) > len(match_ext):
+                match_ext = ext
+    if len(match_ext) == 0:
+        return False
+
+    print "Extracting '{}'".format(filename)
+    create_dir(dest_dir)
+    err = extensions[match_ext](filename, dest_dir)
+    if err:
+        raise RuntimeError(err)
+    return True

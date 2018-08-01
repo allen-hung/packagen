@@ -2,7 +2,7 @@ import sys
 from config import load_config
 from part import complete_parts
 from build import build_parts
-from package import package, package_verify_config
+from package import package, verify_package_config
 from common import print_error, remove_all
 
 global_config = None
@@ -37,7 +37,7 @@ def main():
 
     global global_config
     global_config = type("Config", (), config)
-    package_verify_config(global_config)
+    verify_package_config(global_config)
     check_arguments()
     complete_parts(global_config)
     build_parts(global_config)

@@ -13,7 +13,6 @@ def build_prepare(part, env):
         prepare = part.doc["build-prepare"]
         if not isinstance(prepare, str):
             print_error("Part '{}': 'build-prepare' must be string".format(part.name))
-        os.chdir(part.build_path())
         err = execute_script(prepare.split("\n"), env)
         if err:
             print_error(err)
@@ -27,7 +26,6 @@ def build_override(part, env):
         elif not isinstance(override, str):
             print_error("Part '{}': 'build-override' must be string".format(part.name))
         print_warn("Part '{}': 'build-override' is specified and it overrides build() method in '{}' module".format(part.name, part.build))
-        os.chdir(part.build_path())
         err = execute_script(override.split("\n"), env)
         if err:
             print_error(err)
@@ -42,7 +40,6 @@ def install_override(part, env):
         elif not isinstance(override, str):
             print_error("Part '{}': 'install-override' must be string".format(part.name))
         print_warn("Part '{}': 'install-override' is specified and it overrides install() method in '{}' module".format(part.name, part.build))
-        os.chdir(part.build_path())
         err = execute_script(override.split("\n"), env)
         if err:
             print_error(err)
@@ -50,7 +47,6 @@ def install_override(part, env):
     return False
 
 def build_part(part):
-    root_dir = global_install_path(part.gconfig)
     install_dir = part.install_path()
     source_dir = part.source_path()
     build_dir = part.build_path()
@@ -68,10 +64,10 @@ def build_part(part):
 
     remove_dir(install_dir)
 
-    # get module parameters and put them in 'module_vars'
+    # get module parameters and put them in 'module_params'
     var_name_prefix = part.build + "-"
     prefix_len = len(var_name_prefix)
-    module_vars = dict((k[prefix_len:], v) for k, v in part.doc.iteritems() 
+    module_params = dict((k[prefix_len:], v) for k, v in part.doc.iteritems() 
                             if len(k) > prefix_len and k[:prefix_len] == var_name_prefix)
 
     env = {
@@ -82,17 +78,20 @@ def build_part(part):
     }
 
     # do the build prepare
-    build_prepare(part, env.copy())
+    os.chdir(build_dir)
+    build_prepare(part, env)
 
     # do the make main
-    if build_override(part, env.copy()) is False:
-        part.build_module.build(build_dir, root_dir, module_vars, env.copy())
+    os.chdir(build_dir)
+    if build_override(part, env) is False:
+        part.build_module.build(part, module_params, env.copy())
     part.set_build_state("BUILT")
 
     # do the make install
+    os.chdir(build_dir)
     create_dir(install_dir)
-    if install_override(part, env.copy()) is False:
-        part.build_module.install(build_dir, install_dir, root_dir, module_vars, env.copy())
+    if install_override(part, env) is False:
+        part.build_module.install(part, module_params, env.copy())
     part.set_build_state("INSTALLED")
 
 def copy_targets(part, target_dir):

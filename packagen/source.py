@@ -4,7 +4,7 @@ import glob
 import shutil
 import subprocess
 from common import execute, source_path, print_error, print_warn, execute
-from common import create_dir, remove_dir
+from common import create_dir, remove_dir, extract_tarball
 from urlparse import urlparse
 
 DEBUG = False
@@ -15,47 +15,6 @@ def move_dir(src, dest):
         shutil.copytree(src, dest)
     else:
         shutil.move(src, dest)
-
-def extract_tarball(filename, dest_dir):
-    def extract_tgz(tarball, dest_dir):
-        return execute(["tar", "zxf", tarball, "-C", dest_dir])
-
-    def extract_txz(tarball, dest_dir):
-        return execute(["tar", "xf", tarball, "-C", dest_dir])
-
-    def extract_tar(tarball, dest_dir):
-        return execute(["tar", "xf", tarball, "-C", dest_dir])
-
-    def extract_gzip(tarball, dest_dir):
-        return "gzip is not yet supported"
-
-    def extract_zip(tarball, dest_dir):
-        return execute(["unzip", tarball, "-d", dest_dir])
-
-    extensions = {
-        ".tar.xz": extract_txz,
-        ".txz": extract_txz,
-        ".tar.gz": extract_tgz,
-        ".tgz": extract_tgz,
-        ".tar": extract_tar,
-        ".gz": extract_gzip,
-        ".zip": extract_zip,
-    }
-
-    match_ext = ""
-    for ext, method in extensions.iteritems():
-        if len(filename) > len(ext) and filename[-len(ext):] == ext:
-            if len(ext) > len(match_ext):
-                match_ext = ext
-    if len(match_ext) == 0:
-        return False
-
-    print "Extracting '{}'".format(filename)
-    create_dir(dest_dir)
-    err = extensions[match_ext](filename, dest_dir)
-    if err:
-        raise RuntimeError(err)
-    return True        
 
 def get_local_file(input, output):
     black_list = ["package.yaml", "stage", "install", "target", "release", "control"]

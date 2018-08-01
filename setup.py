@@ -4,7 +4,7 @@ import os
 #from distutils.core import setup
 from setuptools import setup, find_packages
 
-ver = "1.0.4"
+ver = "1.1.0"
 
 setup(name = "packagen",
       version = ver,
@@ -15,3 +15,4 @@ setup(name = "packagen",
       install_requires = [],
       scripts = ["scripts/packagen"],
      )
+

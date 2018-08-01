@@ -1,5 +1,5 @@
 import os
-from ..common import print_error, execute_script, is_list_of_string
+from ..common import print_error, execute_script, is_list_of_string, global_install_path
 
 module_name = "make"
 
@@ -13,34 +13,36 @@ def extra_paths(root_dir, env):
     env["LD_LIBRARY_PATH"] = ld_path
     env["LIBRARY_PATH"] = ld_path
 
-def make_parameters(vars):
+def make_parameters(params):
     parameters = []
-    if "makefile" in vars:
-        parameters += ["-f", vars["makefile"]]
-    if "parameters" in vars and vars["parameters"] is not None:
-        if is_list_of_string(vars["parameters"]) is False:
+    if "makefile" in params:
+        parameters += ["-f", params["makefile"]]
+    if "parameters" in params and params["parameters"] is not None:
+        if is_list_of_string(params["parameters"]) is False:
             print_error("'{}' must be a list of string".format(module_name + "-parameters"))
-        parameters += vars["parameters"]
+        parameters += params["parameters"]
     return parameters
 
-def build(build_dir, root_dir, vars, env):
+def build(part, params, env):
+    root_dir = global_install_path(part.gconfig)
     extra_paths(root_dir, env) 
-    os.chdir(build_dir)
-    parameters = make_parameters(vars)
+    parameters = make_parameters(params)
     command_line = " ".join(["make"] + parameters)
     err = execute_script([command_line], env)
     if err:
         print_error(err)
 
-def install(build_dir, install_dir, root_dir, vars, env):
-    #extra_paths(root_dir, env)
-    os.chdir(build_dir)
-    parameters = make_parameters(vars)
+def install(part, params, env):
+    install_dir = part.install_path()
+    parameters = make_parameters(params)
     command_line = " ".join(["fakeroot", "make"] + parameters + ["install"])
     install_var = "DESTDIR"
-    if "install-var" in vars and vars["install-var"] is not None:
-        install_var = vars["install-var"]
+    if "install-var" in params and params["install-var"] is not None:
+        install_var = params["install-var"]
     env[install_var] = install_dir
     err = execute_script([command_line], env)
     if err:
         print_error(err)
+
+def get_default_part_parameters():
+    return { "source-strip": "yes", "source-extract": "yes" }

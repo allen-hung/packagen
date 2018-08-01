@@ -124,9 +124,9 @@ def load_build_module(part):
         print_error("Failed to import '{}' for building part '{}': {}".format(part.build, part.name, e))
 
 def add_default_parameters(part):
-    if not hasattr(part.build_module, "preferred_default_part_parameters"):
+    if not hasattr(part.build_module, "get_default_part_parameters"):
         return
-    def_params = part.build_module.preferred_default_part_parameters()
+    def_params = part.build_module.get_default_part_parameters()
     for k, v in def_params.iteritems():
         if k not in part.doc:
             part.doc[k] = v
