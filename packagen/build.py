@@ -59,7 +59,7 @@ def build_part(part):
         shutil.copytree(source_dir, build_dir)
         part.set_build_state("CLEAN")
     else:
-        print_warn("Part '{}' had even been built,".format(part.name),
+        print_warn("Part '{}' has ever been built,".format(part.name),
                    "in order to perform a clean build, use --clean-build")
 
     remove_dir(install_dir)
