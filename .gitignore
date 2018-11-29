@@ -1,2 +1,5 @@
 *.pyc
 examples/
+build
+dist
+packagen.egg-info

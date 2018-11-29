@@ -107,28 +107,28 @@ def sigstring(gconfig):
     strs = [gconfig.version, gconfig.architecture]
     return "_".join(strs)
 
+_stage_dir = ".stage"
+
 def source_path(gconfig):
-    return os.path.join(current_dir, "stage", "source", sigstring(gconfig))
+    return os.path.join(current_dir, _stage_dir, sigstring(gconfig), "source")
 
 def build_path(gconfig):
-    return os.path.join(current_dir, "stage", "build", sigstring(gconfig))
+    return os.path.join(current_dir, _stage_dir, sigstring(gconfig), "build")
 
 def install_path(gconfig):
-    return os.path.join(current_dir, "stage", "install", sigstring(gconfig))
+    return os.path.join(current_dir, _stage_dir, sigstring(gconfig), "install")
+
+def shared_root_path(gconfig):
+    return os.path.join(current_dir, _stage_dir, sigstring(gconfig), "root")
 
 def target_path(gconfig):
-    return os.path.join(current_dir, "target", sigstring(gconfig))
-
-def global_install_path(gconfig):
-    return os.path.join(current_dir, "install", sigstring(gconfig))
+    return os.path.join(current_dir, _stage_dir, sigstring(gconfig), "target")
 
 def release_path(gconfig):
     return os.path.join(current_dir, "release")
 
 def remove_all():
-    remove_dir("stage")
-    remove_dir("target")
-    remove_dir("install")
+    remove_dir(_stage_dir)
     remove_dir("release")
 
 def extract_tarball(filename, dest_dir):

@@ -1,5 +1,5 @@
 import os
-from ..common import print_error, execute_script, is_list_of_string, global_install_path
+from ..common import print_error, execute_script, is_list_of_string, shared_root_path
 
 module_name = "make"
 
@@ -24,7 +24,7 @@ def make_parameters(params):
     return parameters
 
 def build(part, params, env):
-    root_dir = global_install_path(part.gconfig)
+    root_dir = shared_root_path(part.gconfig)
     extra_paths(root_dir, env) 
     parameters = make_parameters(params)
     command_line = " ".join(["make"] + parameters)

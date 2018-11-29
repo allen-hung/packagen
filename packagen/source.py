@@ -17,7 +17,7 @@ def move_dir(src, dest):
         shutil.move(src, dest)
 
 def get_local_file(input, output):
-    black_list = ["package.yaml", "stage", "install", "target", "release", "control"]
+    black_list = ["package.yaml", ".stage", "release", "control"]
     valid_components = []
     for path in input.split("/"):
         if path == ".":
@@ -42,7 +42,7 @@ def get_local_file(input, output):
         if file in black_list:
             continue
         dest_path = os.path.join(output, file)
-        print "{} -> {}".format(file, dest_path)
+        #print "{} -> {}".format(file, dest_path)
         if os.path.isdir(file):
             shutil.copytree(file, dest_path)
         else:

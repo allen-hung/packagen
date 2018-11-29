@@ -1,6 +1,6 @@
 import os
 import shutil
-from common import build_path, target_path, install_path, global_install_path
+from common import build_path, target_path, install_path, shared_root_path
 from common import print_error, print_warn, create_dir, remove_dir
 from common import execute_script, copy
 
@@ -96,7 +96,7 @@ def build_part(part):
 
 def copy_targets(part, target_dir):
     install_dir = part.install_path()
-    src_tag = "$(INSTALL)/"
+    src_tag = "$(ROOT)/"
     dst_tag = "$(TARGET)/"
     if len(part.targets) == 0:
         copy(src_tag, dst_tag, install_dir, target_dir)
@@ -117,13 +117,13 @@ def copy_targets(part, target_dir):
 
 def build_parts(gconfig):
     from part import parts
-    g_install_dir = global_install_path(gconfig)
-    g_target_dir = target_path(gconfig)
-    remove_dir(g_install_dir)
-    remove_dir(g_target_dir)
+    root_dir = shared_root_path(gconfig)
+    target_dir = target_path(gconfig)
+    remove_dir(root_dir)
+    remove_dir(target_dir)
     for part in parts:
         print "Build part '{}'".format(part.name)
         build_part(part)
         print "Prepare taregt environment"
-        copy_targets(part, g_target_dir)
-        copy("", "", part.install_path(), g_install_dir)
+        copy_targets(part, target_dir)
+        copy("", "", part.install_path(), root_dir)
